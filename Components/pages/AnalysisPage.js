@@ -1,33 +1,18 @@
 import React, { useMemo } from 'react';
-import { Stock, PortfolioMetrics } from '../../types';
-import PortfolioPieChart from '../PortfolioPieChart';
-import PerformanceChart from '../PerformanceChart';
+import PortfolioPieChart from '../PortfolioPieChart.js';
+import PerformanceChart from '../PerformanceChart.js';
 
-interface AnalysisPageProps {
-  stocks: Stock[];
-  clientName: string;
-  metrics: PortfolioMetrics;
-}
-
-interface GeneratedAnalysis {
-  portfolioHealthScore: number;
-  keyObservations: string[];
-  actionableInsights: string[];
-}
-
-const renderMarkdownList = (items: string[]) => {
+const renderMarkdownList = (items) => {
   if (!items || items.length === 0) return null;
-  return (
-    <ul className="list-disc list-inside space-y-1">
-      {items.map((item, index) => <li key={index}>{item}</li>)}
-    </ul>
+  return React.createElement('ul', { className: 'list-disc list-inside space-y-1' },
+    ...items.map((item, index) => React.createElement('li', { key: index }, item))
   );
 };
 
-const AnalysisPage: React.FC<AnalysisPageProps> = ({ stocks, clientName, metrics }) => {
+const AnalysisPage = ({ stocks, clientName, metrics }) => {
   const heldStocks = stocks.filter(s => !s.sellDate);
 
-  const analysis = useMemo<GeneratedAnalysis>(() => {
+  const analysis = useMemo(() => {
     if (heldStocks.length === 0) {
       return {
         portfolioHealthScore: 0,
@@ -37,8 +22,8 @@ const AnalysisPage: React.FC<AnalysisPageProps> = ({ stocks, clientName, metrics
     }
 
     let score = 50;
-    const observations: string[] = [];
-    const insights: string[] = [];
+    const observations = [];
+    const insights = [];
 
     // Metric 1: Profitability
     if (metrics.netPL > 0) {
@@ -104,7 +89,7 @@ const AnalysisPage: React.FC<AnalysisPageProps> = ({ stocks, clientName, metrics
   }, [stocks, metrics]);
 
   const handleExportWord = () => {
-    const listToHtml = (items: string[]) => {
+    const listToHtml = (items) => {
       if (!items || items.length === 0) return '';
       return `<ul>${items.map(item => `<li>${item}</li>`).join('')}</ul>`;
     }
@@ -138,72 +123,61 @@ const AnalysisPage: React.FC<AnalysisPageProps> = ({ stocks, clientName, metrics
     URL.revokeObjectURL(url);
   };
 
-  const scoreColor = (score: number) => {
+  const scoreColor = (score) => {
     if (score > 75) return 'text-green-400';
     if (score > 50) return 'text-yellow-400';
     return 'text-red-400';
   }
 
-  const renderAnalysisReport = () => (
-    <div className="bg-navy-dark p-6 rounded-lg shadow-2xl">
-        <h3 className="text-2xl font-bold text-cyan-400 mb-6 text-center">Portfolio Performance Report</h3>
-        <div className="text-left space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-navy p-6 rounded-lg flex flex-col items-center justify-center text-center shadow-inner">
-              <h4 className="text-lg font-semibold text-slate-300 mb-2">Portfolio Health Score</h4>
-              <p className={`text-6xl font-bold ${scoreColor(analysis.portfolioHealthScore)}`}>
-                {analysis.portfolioHealthScore}
-                <span className="text-4xl text-slate-400">/100</span>
-              </p>
-            </div>
-            <div className="md:col-span-2 bg-navy p-6 rounded-lg shadow-inner space-y-4">
-              <div>
-                <h4 className="text-lg font-semibold text-cyan-500 mb-2">Key Observations</h4>
-                <div className="text-slate-300 max-w-none">
-                  {renderMarkdownList(analysis.keyObservations)}
-                </div>
-              </div>
-              <div className="border-t border-slate-700 my-4"></div>
-              <div>
-                <h4 className="text-lg font-semibold text-cyan-500 mb-2">Actionable Insights</h4>
-                 <div className="text-slate-300 max-w-none">
-                  {renderMarkdownList(analysis.actionableInsights)}
-                </div>
-              </div>
-            </div>
-          </div>
-          {heldStocks.length > 0 && (
-            <div className="text-center pt-4">
-              <button
-                onClick={handleExportWord}
-                className="bg-slate-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-slate-700 transition duration-300 shadow-md"
-              >
-                Export Report to Word
-              </button>
-            </div>
-          )}
-        </div>
-    </div>
+  const renderAnalysisReport = () => React.createElement('div', { className: "bg-navy-dark p-6 rounded-lg shadow-2xl" },
+    React.createElement('h3', { className: "text-2xl font-bold text-cyan-400 mb-6 text-center" }, "Portfolio Performance Report"),
+    React.createElement('div', { className: "text-left space-y-6" },
+      React.createElement('div', { className: "grid grid-cols-1 md:grid-cols-3 gap-8" },
+        React.createElement('div', { className: "bg-navy p-6 rounded-lg flex flex-col items-center justify-center text-center shadow-inner" },
+          React.createElement('h4', { className: "text-lg font-semibold text-slate-300 mb-2" }, "Portfolio Health Score"),
+          React.createElement('p', { className: `text-6xl font-bold ${scoreColor(analysis.portfolioHealthScore)}` },
+            analysis.portfolioHealthScore,
+            React.createElement('span', { className: "text-4xl text-slate-400" }, "/100")
+          )
+        ),
+        React.createElement('div', { className: "md:col-span-2 bg-navy p-6 rounded-lg shadow-inner space-y-4" },
+          React.createElement('div', null,
+            React.createElement('h4', { className: "text-lg font-semibold text-cyan-500 mb-2" }, "Key Observations"),
+            React.createElement('div', { className: "text-slate-300 max-w-none" },
+              renderMarkdownList(analysis.keyObservations)
+            )
+          ),
+          React.createElement('div', { className: "border-t border-slate-700 my-4" }),
+          React.createElement('div', null,
+            React.createElement('h4', { className: "text-lg font-semibold text-cyan-500 mb-2" }, "Actionable Insights"),
+            React.createElement('div', { className: "text-slate-300 max-w-none" },
+              renderMarkdownList(analysis.actionableInsights)
+            )
+          )
+        )
+      ),
+      heldStocks.length > 0 && React.createElement('div', { className: "text-center pt-4" },
+        React.createElement('button', {
+          onClick: handleExportWord,
+          className: "bg-slate-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-slate-700 transition duration-300 shadow-md"
+        }, "Export Report to Word")
+      )
+    )
   );
 
-  return (
-    <div className="space-y-8 animate-fadeIn">
-      <h2 className="text-3xl font-bold text-white text-center">Portfolio Analysis</h2>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="bg-navy-light p-4 rounded-lg shadow-lg">
-           <h3 className="text-lg font-semibold text-cyan-400 mb-4 text-center">Asset Allocation</h3>
-          <PortfolioPieChart stocks={stocks} />
-        </div>
-        <div className="bg-navy-light p-4 rounded-lg shadow-lg">
-          <h3 className="text-lg font-semibold text-cyan-400 mb-4 text-center">Profit & Loss by Stock</h3>
-          <PerformanceChart stocks={stocks} />
-        </div>
-      </div>
-      
-      {renderAnalysisReport()}
-
-    </div>
+  return React.createElement('div', { className: "space-y-8 animate-fadeIn" },
+    React.createElement('h2', { className: "text-3xl font-bold text-white text-center" }, "Portfolio Analysis"),
+    React.createElement('div', { className: "grid grid-cols-1 lg:grid-cols-2 gap-8" },
+      React.createElement('div', { className: "bg-navy-light p-4 rounded-lg shadow-lg" },
+        React.createElement('h3', { className: "text-lg font-semibold text-cyan-400 mb-4 text-center" }, "Asset Allocation"),
+        React.createElement(PortfolioPieChart, { stocks: stocks })
+      ),
+      React.createElement('div', { className: "bg-navy-light p-4 rounded-lg shadow-lg" },
+        React.createElement('h3', { className: "text-lg font-semibold text-cyan-400 mb-4 text-center" }, "Profit & Loss by Stock"),
+        React.createElement(PerformanceChart, { stocks: stocks })
+      )
+    ),
+    renderAnalysisReport()
   );
 };
 
