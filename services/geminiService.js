@@ -1,19 +1,13 @@
 import { GoogleGenAI, Type } from '@google/genai';
-import { Stock, AIAnalysis } from '../types';
-
-// IMPORTANT: This implementation exposes your API key to the browser.
-// This is NOT recommended for production.
-// It is used here because the serverless proxy is timing out on the free hosting tier.
 
 let ai;
 try {
-  // This reads the API_KEY from the environment at build time.
   ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 } catch (error) {
   console.error("Failed to initialize GoogleGenAI. Is the API_KEY set?", error);
 }
 
-export const getPortfolioAnalysis = async (stocks: Stock[]): Promise<AIAnalysis> => {
+export const getPortfolioAnalysis = async (stocks) => {
   if (stocks.length === 0) {
     return {
       portfolioHealthScore: 0,
@@ -69,19 +63,18 @@ export const getPortfolioAnalysis = async (stocks: Stock[]): Promise<AIAnalysis>
       throw new Error("The AI model returned an empty response. This may be due to content safety restrictions.");
     }
 
-    const analysisResult: AIAnalysis = JSON.parse(responseText);
+    const analysisResult = JSON.parse(responseText);
     return analysisResult;
 
   } catch (error) {
     console.error("Error fetching analysis directly from Gemini:", error);
-    const typedError = error as Error;
     let errorMessage = `An error occurred while fetching the analysis.`;
-    if (typedError.message.includes('API key not valid')) {
+    if (error.message.includes('API key not valid')) {
         errorMessage = 'The provided API Key is not valid. Please check your key and try again.';
-    } else if (typedError.message.includes('fetch-failed')) {
+    } else if (error.message.includes('fetch-failed')) {
         errorMessage = 'A network error occurred. Please check your internet connection.';
     } else {
-        errorMessage = typedError.message;
+        errorMessage = error.message;
     }
 
     return {
