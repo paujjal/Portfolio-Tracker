@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Portfolio Tracker</title>
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#0f172a">
+    <link rel="apple-touch-icon" href="/icon-192.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              navy: {
+                light: '#1d2a4a',
+                DEFAULT: '#0f172a',
+                dark: '#0a1020',
+              },
+              cyan: {
+                light: '#67e8f9',
+                DEFAULT: '#06b6d4',
+                dark: '#0e7490',
+              },
+            },
+          },
+        },
+      }
+    </script>
+    <style>
+      @media print {
+        /* Hide everything on the page by default */
+        body * {
+          visibility: hidden;
+        }
+
+        /* Make the printable area and everything inside it visible */
+        .printable-area, .printable-area * {
+          visibility: visible;
+        }
+
+        /*
+          The .printable-area is the modal content. We override its on-screen
+          styles (designed for a modal) and make it behave like a normal
+          document for printing.
+        */
+        .printable-area {
+          position: absolute !important; /* Position it at the top of the print page */
+          left: 0 !important;
+          top: 0 !important;
+          width: 100% !important; /* Make it fill the page width */
+
+          /* Reset styles that are for the modal view */
+          height: auto !important;
+          max-height: none !important;
+          overflow: visible !important;
+          box-shadow: none !important;
+          border: none !important;
+          margin: 0 !important; /* Ensure no strange margins */
+        }
+
+        /* Hide elements that should not be printed, like buttons */
+        .no-print, .no-print * {
+          display: none !important;
+        }
+
+        /* Ensure dark theme colors are inverted for printing on white paper */
+        .printable-area {
+            background-color: white !important;
+            color: black !important;
+        }
+        .printable-area h2, .printable-area h3, .printable-area span, .printable-area p, .printable-area div, .printable-area li, .printable-area th, .printable-area td {
+            color: black !important;
+        }
+        .printable-area .text-green-400 { color: #166534 !important; } /* dark green */
+        .printable-area .text-red-400 { color: #991b1b !important; } /* dark red */
+        .printable-area .bg-navy-dark { background: #f3f4f6 !important; border: 1px solid #e5e7eb; }
+        .printable-area .border-slate-700 { border-color: #d1d5db !important; }
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.25.0",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/"
+  }
+}
+</script>
+</head>
+  <body class="bg-navy text-slate-200">
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/service-worker.js').then(registration => {
+            console.log('ServiceWorker registration successful with scope: ', registration.scope);
+          }).catch(error => {
+            console.log('ServiceWorker registration failed: ', error);
+          });
+        });
+      }
+    </script>
+  </body>
+</html>
